@@ -1,6 +1,4 @@
-AI编译器-pytorch篇(1)
-
-**AI编译器-tpu_mlir篇（1）**
+**Pytorch-basic篇（1）**
 
 # 摘要
 
