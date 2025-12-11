@@ -1,0 +1,229 @@
+%!TeX program = xelatex
+\documentclass[12pt,hyperref,a4paper,UTF8]{ctexart}
+\usepackage{RUCReport}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% 定义可能使用到的颜色
+\definecolor{CPPLight}  {HTML} {686868}
+\definecolor{CPPSteel}  {HTML} {888888}
+\definecolor{CPPDark}   {HTML} {262626}
+\definecolor{CPPBlue}   {HTML} {4172A3}
+\definecolor{CPPGreen}  {HTML} {487818}
+\definecolor{CPPBrown}  {HTML} {A07040}
+\definecolor{CPPRed}    {HTML} {AD4D3A}
+\definecolor{CPPViolet} {HTML} {7040A0}
+\definecolor{CPPGray}  {HTML} {B8B8B8}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\definecolor{webgreen}{rgb}{0,.5,0}
+\definecolor{bgcolor}{rgb}{0.92,0.92,0.92}
+
+\lstset{
+    breaklines = true,                                   % 自动将长的代码行换行排版
+    extendedchars=false,                                 % 解决代码跨页时，章节标题，页眉等汉字不显示的问题
+    columns=fixed,       
+    numbers=left,                                        % 在左侧显示行号
+    basicstyle=\zihao{-5}\ttfamily,
+    numberstyle=\small,
+    frame=none,                                          % 不显示背景边框
+    % backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+    keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+    numberstyle=\footnotesize\color{darkgray},           % 设定行号格式
+    commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+    stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+    showstringspaces=false,                              % 不显示字符串中的空格
+    % frame=leftline,topline,rightline, bottomline         %分别对应只在左侧，上方，右侧，下方有竖线
+    frame=shadowbox,                                     % 设置阴影
+    rulesepcolor=\color{red!20!green!20!blue!20},        % 阴影颜色
+    basewidth=0.6em,
+}
+
+\lstdefinestyle{CPP}{
+    language=c++,                                        % 设置语言
+    morekeywords={alignas,continute,friend,register,true,alignof,decltype,goto,
+    reinterpret_cast,try,asm,defult,if,return,typedef,auto,delete,inline,short,
+    typeid,bool,do,int,signed,typename,break,double,long,sizeof,union,case,
+    dynamic_cast,mutable,static,unsigned,catch,else,namespace,static_assert,using,
+    char,enum,new,static_cast,virtual,char16_t,char32_t,explict,noexcept,struct,
+    void,export,nullptr,switch,volatile,class,extern,operator,template,wchar_t,
+    const,false,private,this,while,constexpr,float,protected,thread_local,
+    const_cast,for,public,throw,std},
+    emph={map,set,multimap,multiset,unordered_map,unordered_set,
+    unordered_multiset,unordered_multimap,vector,string,list,deque,
+    array,stack,forwared_list,iostream,memory,shared_ptr,unique_ptr,
+    random,bitset,ostream,istream,cout,cin,endl,move,default_random_engine,
+    uniform_int_distribution,iterator,algorithm,functional,bing,numeric,},
+    emphstyle=\color{CPPViolet}, 
+}
+
+\lstdefinestyle{Java}{
+    language=[AspectJ]Java,
+    keywordstyle=\color{keywordcolor}\bfseries
+}
+
+\lstdefinestyle{Python}{
+    language=Python,
+}
+
+%%-------------------------------正文开始---------------------------%%
+\begin{document}
+
+%%-----------------------封面--------------------%%
+\cover
+
+
+%%------------------摘要-------------%%
+%\begin{abstract}
+%
+%在此填写摘要内容
+%
+%\end{abstract}
+%
+%\thispagestyle{empty} % 首页不显示页码
+%
+%%--------------------------目录页------------------------%%
+\newpage
+\tableofcontents
+\thispagestyle{empty} % 目录不显示页码
+
+%%------------------------正文页从这里开始-------------------%
+\newpage
+\setcounter{page}{1} % 让页码从正文开始编号
+
+%%可选择这里也放一个标题
+%\begin{center}
+%    \title{ \Huge \textbf{{标题}}}
+%\end{center}
+
+\section{引言}
+
+近几年，随着大数据和深度学习应用对内存带宽和能效提出更高要求，传统冯·诺依曼体系结构中“处理器–内存”之间频繁的数据搬移逐渐成为性能和能耗瓶颈。相比单纯堆叠更多计算核心或提升主频，业界更迫切地需要一种从数据流动角度出发的体系结构革新，以减少“算力空转、数据奔波”的低效模式。在此背景下，聚焦于减轻数据搬移开销的近存计算（Near-Memory Computing, NMC）与存内计算（Processing-In-Memory, PIM）体系结构，成为学术界和工业界的研究热点。本文调研了近五年内在 IEEE Xplore 与 ACM Digital Library 中发表的若干代表性英文论文，从体系结构设计、编程模型与一致性机制、系统实现流程以及典型应用场景等方面，对近存/存内计算的发展现状进行综述，并讨论其未来演进方向。
+
+\section{研究背景与问题定义}
+
+\subsection{内存墙与功耗墙问题}
+
+一方面，现代多核 CPU 与加速器（如 GPU、TPU）持续提升算力，但内存子系统的带宽与延迟改善相对缓慢，形成所谓“内存墙”与“功耗墙”。多篇工作指出，数据密集型应用（如图神经网络、图算法、键值存储、数据库分析查询等）的总执行时间与能耗中，有相当比例消耗在数据在处理器与 DRAM 之间的反复传输上。另一方面，3D 堆叠 DRAM、HBM 等新型封装技术，使得在内存堆栈中集成逻辑单元成为可能，从而为“就地计算”“靠近数据端计算”提供了物理基础。现有统计显示，在 AI 训练或图分析等典型场景中，数据搬移能耗可占整体能耗的 40\% 以上，这使得“数据本地化计算”成为绕不开的话题。
+
+\subsection{近存计算与存内计算的概念}
+
+在此背景下，研究者将“在内存侧集成简单或定制化计算单元”视为突破传统体系结构瓶颈的一条重要路径。近存计算通常指在内存控制器附近或内存堆栈底部的逻辑层中部署通用或专用计算单元；而存内计算则进一步将部分算子直接嵌入 DRAM 或非易失性存储器阵列中，通过模拟或数字方式实现逻辑与向量运算。两者在实现位置、指令支持粒度以及对存储阵列的侵入程度上有所差异，但核心目标均是降低数据搬移成本、提升能效与带宽利用率。随着 Chiplet 技术与先进封装的发展，PIM/NMC 模块能够以 silicon interposer 或 TSV 方式与 CPU/GPU 并置，为系统集成提供了新的可能\cite{PIMSurvey2019}。
+
+\section{近存计算体系结构}
+
+\subsection{基于3D堆叠内存的近存架构设计}
+
+早期工作多聚焦于利用 3D 堆叠内存中逻辑层，实现面向图处理和数据分析的近存加速架构。例如，有研究提出在堆叠内存逻辑层中集成简单的算术与逻辑单元，通过 ISA 扩展或专用指令，将部分数据并行操作下 offload 到内存侧执行，从而显著降低图遍历和稠密/稀疏向量运算中的内存往返次数。这类体系通常将内存视为“带有轻量算力的主动内存”，对处理器软件栈影响相对较小，更易于通过库函数或编译器扩展集成进现有系统。随着 HBM2/3 带宽的持续提升，研究者进一步在逻辑层内部署可编程 SIMD、简化 RISC Core 或专用状态机，以便在图算法、线性代数和数据库谓词等多样化任务间切换。
+
+\subsection{面向图处理的近存加速架构}
+
+面向图处理的 PIM 架构 \cite{Ahn2015PIMGraph} 通过在堆叠内存逻辑层集成简化的并行处理引擎，使得图遍历过程中大量随机访问可以在内存堆栈内部就地完成。该工作系统地分析了图算法在 PIM 架构上的负载均衡、并行度以及访存模式，证明了对于内存受限的图工作负载，近存/存内计算可以显著缓解带宽瓶颈。这类架构特别适合于 PageRank、BFS、连通分量分析等图算法，因为它们在传统 CPU/GPU 上常受制于不规则的内存访问模式。
+
+\section{存内计算体系结构}
+
+\subsection{基于DRAM的存内计算原语}
+
+一些研究尝试在 DRAM 芯片内部通过重用现有的位线/感应放大器等电路资源，实现简单的逻辑和位操作，从而构建无需大规模修改 DRAM 工艺的存内计算原语。这类工作往往提出一组可由内存控制器触发的“行级操作指令”，如行间复制、行间按位与/或等，并展示在位图索引、内存扫描、加密/解密等任务上的加速效果。其优势在于成本较低、与现有内存子系统兼容性较好，但支持的运算类型与精度相对有限。近期研究也在探索在传统 DRAM 中嵌入电容–电阻串联结构以支持简单乘法，使得更复杂的数值运算成为可能。
+
+\subsection{RowClone与Ambit机制分析}
+
+在存内计算基础机制方面，Seshadri 等人提出的 RowClone 机制 \cite{Seshadri2013RowClone} 展示了如何在不修改 DRAM 工艺的前提下，通过巧妙的行激活序列在芯片内部完成批量行复制和初始化操作，从而大幅加速内存拷贝、页面置换等系统操作。这项工作将“利用现有存储阵列电路做更多事”的思想具体化，为后续大量基于 DRAM 原语的近存/存内方案提供了基础。
+
+在按位操作与逻辑计算方面，Ambit \cite{Seshadri2017Ambit} 进一步发掘了 DRAM 感应放大器与位线结构的潜力，在不引入复杂新器件的条件下实现了高吞吐量的按位与/或/非操作。通过将多行同时激活并结合专用控制序列，Ambit 能够在内存内部并行执行大规模位运算，对于加密、位图索引以及布隆过滤器等应用场景具有显著加速效果，代表了“面向通用按位原语的存内计算”方向。
+
+\subsection{基于新兴存储器的存内计算}
+
+针对深度学习推理与训练场景的存内计算方案不断涌现。部分工作基于电阻式存储阵列（如 RRAM、PCM），将矩阵–向量乘法直接映射到存储阵列的模拟乘累加过程，形成高能效的加速单元。这一类架构通常通过外部 DAC/ADC 将数字权重与激活转换为模拟电压/电流，再在阵列中完成乘加，再回读为数字结果。与传统数字加速器相比，其优点是大幅降低权重加载和中间结果写回带来的数据搬移；但同时也引入了工艺噪声、精度校准和器件老化等新问题。为此，最新工作开始引入混合精度与线性化校准机制，在保证推理精度的同时提升阵列可扩展性。
+
+\subsection{面向深度学习的存内加速架构}
+
+面向深度学习的存内加速方面，PRIME 架构 \cite{Chi2016PRIME} 以 ReRAM 为基础存储介质，将矩阵–向量乘法映射为存储阵列中的模拟乘累加过程，提出了一种同时兼顾存储密度和计算并行度的处理单元设计。论文中给出了将卷积神经网络层映射到 PRIME 阵列的具体方法，并在性能与能效上相对于传统数字加速器取得了数量级的提升，充分说明了“权重常驻内存、就地计算”的优势。从更宏观的角度看，Mutlu 等人的工作 \cite{PIMSurvey2019} 对近十年来的近存与存内计算研究进行了系统梳理，总结了典型架构设计、编程模型与系统支持、以及在处理器/内存接口和协议方面的演进趋势，为后续研究者提供了清晰的概念框架和问题分类。
+
+\section{编程模型与系统支持}
+
+\subsection{编程模型设计}
+
+除了硬件体系结构本身，编程模型和系统软件栈是近存/存内计算能否被实际应用采纳的关键。部分论文提出将 PIM 单元抽象为协处理器或异构计算设备，通过扩展 OpenCL、CUDA 或任务并行框架，使程序员可以通过 pragma 或 API 显式标注可 offload 的数据并行区域。编译器负责识别循环、数组访问模式以及数据依赖关系，将合适的代码段映射到内存侧执行。也有方案基于 DSL（领域特定语言）为图处理、张量运算等场景提供更高层的描述，使得 PIM 指令的生成对开发者透明。
+
+另一类工作则强调透明性，希望在尽量不修改应用源代码的前提下，由运行时与操作系统自动决策哪些内存访问模式适合迁移到近存/存内单元。这通常需要硬件支持访问统计与热点探测，以及软件层面的页迁移和任务调度机制，以平衡 PIM 单元负载与主处理器之间的协同。为了降低用户门槛，部分研究提出“PIM-aware malloc/allocator”，在应用申请内存时附带元数据描述访存模式，使运行时可以据此选择合适的执行位置。
+
+\subsection{内存一致性机制}
+
+近存/存内计算体系还引入了新的内存一致性问题：当数据在内存侧被修改时，如何与处理器缓存层次结构保持一致，避免读取到陈旧数据？为此，有研究提出了面向 PIM 的一致性协议扩展，引入 PIM 特殊的缓存刷写与失效指令，或设计“PIM-safe”访问区域，要求在 offload 前后执行特定的同步原语。也有工作通过限制 PIM 操作的数据共享模式、采用 bulk-synchronous 风格的执行模型，简化一致性维护的开销。针对 NUMA 或多插槽服务器，研究者还尝试为 PIM 操作增加目录扩展和区域锁定机制，以减少跨节点一致性消息。
+
+\subsection{系统集成方法}
+
+系统集成涉及硬件、固件、操作系统和运行时等多个层次的协同。在硬件层面，需要定义清晰的 PIM 指令集扩展、内存控制器接口以及错误处理机制。在固件层面，BIOS/UEFI 需要识别 PIM 能力并初始化相关配置。在操作系统层面，内存管理子系统需要识别哪些物理页适合 PIM 操作，页分配器需要提供 PIM-aware 的内存分配策略。在运行时层面，需要提供任务调度、负载均衡和资源管理的机制。
+
+\section{应用场景与性能分析}
+
+\subsection{典型应用场景}
+
+综合多篇实证研究，可以看到近存/存内计算在以下几类应用中表现尤为突出：
+
+\begin{itemize}
+    \item 面向图和稀疏数据结构的算法，如 PageRank、BFS、连通分量分析等，因其内存访问高度不规则、计算/访存比低，在传统 CPU/GPU 上常受制于内存带宽。将邻接表或边列表存放在带有 PIM 单元的内存中，可显著减少随机访问往返。
+    \item 数据库与键值存储中的扫描、过滤、聚合等操作，可以通过在内存端执行比较与逻辑判断，实现“只返回满足谓词的数据”，降低 CPU 侧处理负担。
+    \item 深度神经网络中的卷积与全连接层，由于本质上是大规模矩阵–向量/矩阵–矩阵运算，特别适合映射到高并行度的存内矩阵乘单元，在给定功耗预算下实现更高的 TOPS/W。
+\end{itemize}
+
+\subsection{性能与能效评估}
+
+需要指出的是，性能和能效收益高度依赖于应用特征与系统集成方式。一些研究表明，当 offload 任务粒度过细、PIM 单元算力与带宽不匹配、或一致性维护与控制开销过大时，反而可能抵消甚至超过通过减少数据搬移所带来的收益。因此，如何在体系结构设计阶段结合目标应用，找到合理的 PIM 粒度与接口，是当前研究中的一个重要方向。许多论文在设计阶段都会给出“任务切分模型”，指出何种数据块、循环或操作可在 PIM 侧执行，从而指导编译器与运行时决策。
+
+在实际评估中，研究者通常关注以下几个关键指标：数据搬移削减率（衡量 PIM 减少了多少跨内存总线的数据传输）、加速比（相对于纯 CPU 执行的性能提升）、能效比（单位功耗下的吞吐量提升）、以及编程复杂度（衡量使用 PIM 所需的代码改动量）。综合来看，近存/存内计算在图处理、数据库操作和深度学习推理等数据密集型应用中表现出色，但在计算密集型或对延迟敏感的任务中收益有限。
+
+\section{系统实现与评估方法}
+
+\subsection{硬件原型与仿真方法}
+
+为了验证 PIM/NMC 原型，研究者通常采用 RTL 仿真与硬件原型相结合的方式。RowClone 与 Ambit 等工作通过扩展开源 DRAM 控制器，在电路级仿真中验证新的行级指令序列，并进一步在 gem5、Ramulator 等体系结构模拟器上评估其对 SPEC、PARSEC、Graph500 等基准的影响\cite{Seshadri2013RowClone,Seshadri2017Ambit}。对于 ReRAM/PCM 类模拟计算方案，PRIME 这类架构需要综合器件模型、SPICE 仿真以及系统级性能模型，以量化乘累加精度、模拟噪声以及面积功耗开销\cite{Chi2016PRIME}。
+
+\subsection{评估指标与方法}
+
+评估指标不仅包括传统的 IPC、吞吐量和能效，还常常重点展示以下数据：其一是数据搬移削减率（bytes transferred reduction），衡量 PIM 将多少原本需要跨内存总线传输的数据留在本地完成；其二是主机干扰度，评估 PIM 操作对 CPU 缓存/内存调度的影响；其三是软件开销，包括编译时间、运行时调度延迟以及必要的代码改动。为了确保结果可信，不少研究还提供 FPGA 或 HBM 开发板上的小规模硬件演示，展示实际带宽利用率与功耗数据。此外，研究者还会使用标准基准测试套件（如 SPEC、Graph500、MLPerf 等）来验证 PIM 架构在实际应用场景中的表现。
+
+\section{挑战与未来研究方向}
+
+\subsection{当前面临的主要挑战}
+
+尽管近存计算与存内计算展示出巨大的潜力，但仍面临诸多挑战：
+
+\begin{itemize}
+    \item \textbf{器件与工艺不确定性}：模拟型存内计算依赖存储器阵列的模拟特性，易受到工艺差异、温度波动和器件老化影响，如何在体系结构和电路层面提供高效的校准与容错机制仍是难点。即便是数字型 PIM，也需要在有限的逻辑面积内整合足够多的算力而不显著降低 DRAM 良率。此外，不同批次、不同供应商的存储器器件特性可能存在差异，这对系统的一致性和可靠性提出了挑战。
+    \item \textbf{软件生态与可编程性}：目前大多数编程模型和工具链仍处于原型阶段，缺乏统一的 API 与抽象，这在一定程度上阻碍了应用开发者大规模采用 PIM/NMC 技术。如何像 CUDA/OpenCL 那样形成成熟生态，或在主流编译器（如 LLVM、TVM）中提供一等支持，是亟须解决的问题。此外，调试工具、性能分析器以及错误诊断机制也需要同步发展。
+    \item \textbf{标准化与接口定义}：如何在处理器、内存供应商与系统集成商之间形成统一的 PIM 接口标准（包括指令、协议和物理封装），以便于产业落地，是一个需要长期协同的过程。目前 JEDEC 等组织虽已讨论相关扩展，但距离广泛部署仍有距离。缺乏统一标准会导致不同厂商的 PIM 方案互不兼容，增加系统集成复杂度。
+    \item \textbf{安全与隔离}：当内存具备计算能力后，传统意义上的“受信任计算边界”发生变化，需要重新审视侧信道攻击、防护机制以及多租户环境下的资源隔离策略。部分研究提出在 PIM 指令中加入权限检查与加密选项，但也会引入额外延迟。如何在不显著影响性能的前提下保证安全性，是一个需要深入研究的课题。
+    \item \textbf{调度与资源管理}：在数据中心和云环境中，一个内存堆栈可能被多个租户共享，如何公平调度 PIM 资源、避免计算热点、并与主机操作系统调度策略协同，是实际部署时必须考虑的系统级问题。此外，动态负载均衡、优先级调度以及资源预留机制也需要进一步完善。
+\end{itemize}
+
+\subsection{未来研究方向展望}
+
+基于当前的研究进展和挑战，未来近存/存内计算研究可能会朝着以下几个方向演进：
+
+首先，在硬件架构方面，研究者将继续探索更加通用和灵活的 PIM 单元设计，支持更多类型的计算任务。例如，可重构计算单元、神经网络加速器与通用计算单元的结合、以及支持多种精度级别的混合计算架构。此外，随着新兴存储器技术（如 FeRAM、MRAM、CBRAM 等）的发展，基于这些器件的存内计算方案也将得到更多关注。
+
+其次，在软件生态方面，可以预期会有更多成熟的编程框架和工具链出现。这些工具将提供更高级的抽象、更好的可移植性、以及更完善的优化策略。机器学习编译器（如 TVM、MLIR）与 PIM 架构的集成将成为重要研究方向，使得深度学习模型能够自动利用 PIM 加速。
+
+第三，在系统集成方面，未来可能会出现更多将 PIM 与 CPU、GPU、FPGA 等计算单元协同工作的异构计算系统。这种协同需要新的调度策略、内存一致性协议以及任务划分算法。同时，边缘计算和物联网场景下的轻量级 PIM 方案也值得关注。
+
+第四，在标准化方面，随着技术的成熟，行业组织可能会制定更加完善的 PIM 接口和协议标准。这将推动 PIM 技术的产业化进程，使得更多厂商能够参与到 PIM 生态系统的建设中。
+
+最后，在应用拓展方面，除了传统的图处理、数据库和深度学习应用，PIM 技术可能会在更多领域找到用武之地，如科学计算、密码学、区块链、以及新兴的 AI 应用场景（如大语言模型的推理加速）。
+
+\subsection{结论}
+
+总体来看，近存计算与存内计算体系结构为突破内存墙提供了一条具有前景的技术路径。随着新型存储器器件成熟、3D 封装工艺成本下降，以及编程模型和软件生态的不断演进，可以预见未来五到十年内，这一方向将在通用处理器、数据中心加速器以及边缘/嵌入式系统中得到更加广泛的探索与应用。更重要的是，PIM/NMC 的理念也启发人们重新思考“数据与计算的边界”，这将推动未来系统朝着更紧密耦合、更高能效的方向演进。然而，要实现这一愿景，仍需要学术界和工业界的持续努力，在硬件设计、软件生态、标准化和系统集成等多个方面取得突破。
+
+%%----------- 参考文献 -------------------%%
+%在reference.bib文件中填写参考文献，此处自动生成
+%\newpage
+%\reference
+
+
+\end{document}

@@ -1,0 +1,153 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{multirow}
+
+% 页面设置
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% 设置行距
+\onehalfspacing
+
+% 自定义命令
+\newcommand{\fillblank}[2][3cm]{\underline{\makebox[#1][l]{#2}}}
+
+% 标题样式
+\title{\textbf{\Huge 计算机网络实验报告\#}}
+\author{}
+\date{}
+
+% 设置表格列宽
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\begin{document}
+
+% 第一页：封面
+\maketitle
+\thispagestyle{empty}
+
+\vspace{1cm}
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{课程名称：} & \fillblank[6cm]{} \\
+\\
+\textbf{班级：} & \fillblank[6cm]{} \\
+\\
+\textbf{实验日期：} & \fillblank[6cm]{} \\
+\\
+\textbf{姓名：} & \fillblank[6cm]{} \\
+\\
+\textbf{学号：} & \fillblank[6cm]{} \\
+\\
+\textbf{实验名称：} & \fillblank[6cm]{} \\
+\end{tabular}
+\end{center}
+
+\vspace{1.5cm}
+
+\noindent\textbf{实验目的及要求：}\\[0.3cm]
+\fillblank[16cm]{}\\[0.5cm]
+\fillblank[16cm]{}\\[0.5cm]
+\fillblank[16cm]{}
+
+\vspace{1cm}
+
+\noindent\textbf{实验环境：}\\[0.3cm]
+\fillblank[16cm]{}\\[0.5cm]
+\fillblank[16cm]{}
+
+\vspace{1cm}
+
+\noindent\textbf{实验内容：}\\[0.3cm]
+\fillblank[16cm]{}\\[0.5cm]
+\fillblank[16cm]{}\\[0.5cm]
+\fillblank[16cm]{}
+
+\newpage
+
+% 第二页：实验步骤
+\section*{实验步骤}
+
+\vspace{0.5cm}
+
+% 这里可以添加实验步骤的内容
+% 可以使用 enumerate 或 itemize 环境
+
+\begin{enumerate}[leftmargin=2em, itemsep=1em]
+    \item 
+    
+    \item 
+    
+    \item 
+    
+    \item 
+\end{enumerate}
+
+\vspace{2cm}
+
+% 可以添加更多内容区域
+\vspace{10cm}
+
+\newpage
+
+% 第三页：关键问题及分析、总结
+\section*{关键问题及分析}
+
+\vspace{0.5cm}
+
+% 关键问题及分析内容
+\vspace{12cm}
+
+\section*{总结}
+
+\vspace{0.5cm}
+
+% 总结内容
+\vspace{12cm}
+
+\newpage
+
+% 第四页：实验成绩评定表
+\section*{实验成绩评定表}
+
+\vspace{1cm}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|L{10cm}|C{2cm}|C{2cm}|}
+\hline
+\centering\textbf{评价内容} & \textbf{权重} & \textbf{得分} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{验收}} \\
+\hline
+实验原理是否理解；程序能否运行；实验结果是否正确；任务是否全部完成。 & 0.5 & \\
+\hline
+\multicolumn{3}{|l|}{\textbf{实验报告}} \\
+\hline
+1. 报告格式是否规范，语言使用是否规范，行文是否流畅，是否图文并茂； & 0.2 & \\
+\hline
+2. 实验原理、实验步骤描述是否正确、详实；程序流程图是否规范，代码实现是否正确；实验数据记录是否完整，实验结果是否正确；实验结果的分析、对比是否充分； & 0.2 & \\
+\hline
+3. 实验体会是否正确，是否提出了自己独到见解。 & 0.1 & \\
+\hline
+\textbf{合计} & \textbf{1.0} & \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}
+

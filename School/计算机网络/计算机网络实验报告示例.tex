@@ -1,0 +1,218 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{listings}
+
+% 页面设置
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% 设置行距
+\onehalfspacing
+
+% 自定义命令
+\newcommand{\fillblank}[2][3cm]{\underline{\makebox[#1][l]{#2}}}
+
+% 标题样式
+\title{\textbf{\Huge 计算机网络实验报告\#}}
+\author{}
+\date{}
+
+% 设置表格列宽
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% 代码样式设置
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,
+    showspaces=false,
+    showstringspaces=false
+}
+
+\begin{document}
+
+% 第一页：封面
+\maketitle
+\thispagestyle{empty}
+
+\vspace{1cm}
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{课程名称：} & \fillblank[6cm]{计算机网络} \\
+\\
+\textbf{班级：} & \fillblank[6cm]{计算机科学与技术2021级1班} \\
+\\
+\textbf{实验日期：} & \fillblank[6cm]{2024年3月15日} \\
+\\
+\textbf{姓名：} & \fillblank[6cm]{张三} \\
+\\
+\textbf{学号：} & \fillblank[6cm]{2021001001} \\
+\\
+\textbf{实验名称：} & \fillblank[6cm]{TCP/IP协议分析} \\
+\end{tabular}
+\end{center}
+
+\vspace{1.5cm}
+
+\noindent\textbf{实验目的及要求：}\\[0.3cm]
+\fillblank[16cm]{1. 理解TCP/IP协议的基本原理和工作机制；}\\[0.5cm]
+\fillblank[16cm]{2. 掌握使用Wireshark等工具进行网络数据包捕获和分析的方法；}\\[0.5cm]
+\fillblank[16cm]{3. 能够分析TCP三次握手和四次挥手的过程。}
+
+\vspace{1cm}
+
+\noindent\textbf{实验环境：}\\[0.3cm]
+\fillblank[16cm]{操作系统：Windows 10 / Linux Ubuntu 20.04}\\[0.5cm]
+\fillblank[16cm]{软件工具：Wireshark 3.6.0, Python 3.9}
+
+\vspace{1cm}
+
+\noindent\textbf{实验内容：}\\[0.3cm]
+\fillblank[16cm]{1. 使用Wireshark捕获本地网络数据包；}\\[0.5cm]
+\fillblank[16cm]{2. 分析TCP连接的建立过程（三次握手）；}\\[0.5cm]
+\fillblank[16cm]{3. 分析TCP连接的关闭过程（四次挥手）。}
+
+\newpage
+
+% 第二页：实验步骤
+\section*{实验步骤}
+
+\vspace{0.5cm}
+
+\begin{enumerate}[leftmargin=2em, itemsep=1.5em]
+    \item \textbf{启动Wireshark并选择网络接口}
+    \begin{itemize}
+        \item 打开Wireshark软件
+        \item 选择要监听的网络接口（如以太网或Wi-Fi）
+        \item 开始捕获数据包
+    \end{itemize}
+    
+    \item \textbf{生成网络流量}
+    \begin{itemize}
+        \item 在浏览器中访问一个网站（如 www.example.com）
+        \item 或者使用ping命令测试网络连接
+        \item 确保有足够的网络流量用于分析
+    \end{itemize}
+    
+    \item \textbf{分析TCP三次握手}
+    \begin{itemize}
+        \item 在Wireshark中过滤TCP数据包（使用过滤器：tcp）
+        \item 找到TCP连接建立的数据包序列
+        \item 观察SYN、SYN-ACK、ACK三个数据包的交换过程
+        \item 记录源端口、目标端口、序列号等信息
+    \end{itemize}
+    
+    \item \textbf{分析TCP四次挥手}
+    \begin{itemize}
+        \item 关闭网络连接（如关闭浏览器标签页）
+        \item 在Wireshark中找到TCP连接关闭的数据包序列
+        \item 观察FIN、ACK数据包的交换过程
+        \item 分析四次挥手的具体步骤
+    \end{itemize}
+    
+    \item \textbf{记录实验结果}
+    \begin{itemize}
+        \item 截图保存关键数据包信息
+        \item 整理分析结果
+        \item 绘制TCP连接建立和关闭的时序图
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+% 第三页：关键问题及分析、总结
+\section*{关键问题及分析}
+
+\vspace{0.5cm}
+
+\subsection*{问题1：TCP三次握手的必要性}
+
+TCP采用三次握手而不是两次握手的原因主要是为了防止已失效的连接请求报文段突然传送到服务器，从而产生错误。
+
+\textbf{分析：}如果采用两次握手，当客户端发送的SYN请求在网络中滞留，客户端会超时重发。如果服务器收到重发的SYN后建立连接并发送数据，但之前的SYN突然到达，服务器会误认为这是新的连接请求，从而建立冗余连接。
+
+\subsection*{问题2：TCP四次挥手为什么需要四次}
+
+TCP是全双工通信，每个方向都需要单独关闭。一方发送FIN表示不再发送数据，但还可以接收数据。另一方收到FIN后，先发送ACK确认，然后在自己不再发送数据时再发送FIN。
+
+\textbf{分析：}四次挥手确保了数据的完整传输和连接的可靠关闭。如果采用三次挥手，可能会导致一方已经关闭而另一方还在发送数据的情况。
+
+\subsection*{问题3：TIME\_WAIT状态的作用}
+
+TIME\_WAIT状态持续2MSL（Maximum Segment Lifetime）时间，主要作用是：
+\begin{enumerate}
+    \item 确保最后一个ACK能够到达对方
+    \item 防止"已失效的连接请求报文段"出现在本连接中
+\end{enumerate}
+
+\vspace{1cm}
+
+\section*{总结}
+
+\vspace{0.5cm}
+
+通过本次实验，我深入理解了TCP/IP协议的工作原理，特别是TCP连接的建立和关闭过程。主要收获如下：
+
+\begin{enumerate}
+    \item \textbf{理论联系实际：}通过Wireshark工具实际观察了TCP三次握手和四次挥手的过程，将理论知识转化为实际观察，加深了对协议的理解。
+    
+    \item \textbf{问题分析能力：}在分析过程中遇到了一些问题，通过查阅资料和深入思考，理解了TCP协议设计的精妙之处，如为什么需要三次握手、四次挥手等。
+    
+    \item \textbf{工具使用能力：}掌握了Wireshark的基本使用方法，包括数据包捕获、过滤、分析等功能，这对今后的网络问题诊断非常有帮助。
+    
+    \item \textbf{独到见解：}TCP协议的设计充分考虑了网络的不可靠性和各种异常情况，通过状态机、超时重传、滑动窗口等机制，实现了可靠的数据传输。这种设计思想值得在其他系统设计中借鉴。
+\end{enumerate}
+
+\newpage
+
+% 第四页：实验成绩评定表
+\section*{实验成绩评定表}
+
+\vspace{1cm}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|L{10cm}|C{2cm}|C{2cm}|}
+\hline
+\centering\textbf{评价内容} & \textbf{权重} & \textbf{得分} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{验收}} \\
+\hline
+实验原理是否理解；程序能否运行；实验结果是否正确；任务是否全部完成。 & 0.5 & \\
+\hline
+\multicolumn{3}{|l|}{\textbf{实验报告}} \\
+\hline
+1. 报告格式是否规范，语言使用是否规范，行文是否流畅，是否图文并茂； & 0.2 & \\
+\hline
+2. 实验原理、实验步骤描述是否正确、详实；程序流程图是否规范，代码实现是否正确；实验数据记录是否完整，实验结果是否正确；实验结果的分析、对比是否充分； & 0.2 & \\
+\hline
+3. 实验体会是否正确，是否提出了自己独到见解。 & 0.1 & \\
+\hline
+\textbf{合计} & \textbf{1.0} & \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}
+
