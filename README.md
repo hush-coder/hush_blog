@@ -1,46 +1,29 @@
-# hush_blog
+# 🎯 学习目标
 
+- 掌握从模型到硬件的完整编译技术栈
+- 能够系统性地优化AI算子和实现编译器优化
+- 具备针对新硬件设计优化策略的能力
 
-第一步：内存池提取出来
-第二步：提取参数（共享内存大小，线程块分块大小）
-rocm_search_space = {
-    "memory_management": {
-        "pool_size": [4, 6, 8, 12, 16],
-        "growth_factor": [1.1, 1.2, 1.5, 2.0],
-        "double_buffer": [True, False],
-        "param_preload": [True, False]
-    },
-    
-    "hardware_optimization": {
-        "launch_bounds": [(128,1), (256,2), (256,4), (512,1)],
-        "block_dimensions": [(64,1), (128,1), (256,1), (64,2)],
-        "cache_config": ["prefer_shared", "prefer_l1", "prefer_none"]
-    },
-    
-    "memory_access": {
-        "shared_mem_size": [4, 8, 16, 32],
-        "vectorization": [1, 2, 4, 8],
-        "bank_conflict_padding": [0, 1, 2, 4]
-    },
-    
-    "operator_specific": {
-        "conv2d": {
-            "tile_size": [(8,16), (16,32), (32,64)],
-            "unroll_factor": [1, 2, 4, 8]
-        },
-        "attention": {
-            "tile_h_dim": [32, 64, 128],
-            "tile_k_dim": [4, 8, 16],
-            "pipeline_depth": [1, 2, 3, 4]
-        }
-    }
-}
+- [ ] 汇编
+  - [ ] risicv
+  - [ ] ARM
+- [ ] 计算机体系结构
+- [ ] 并行计算基础
+- [ ] cuda
+- [ ] GPU性能优化
+- [ ] LLVM
+  - [ ] 理论
+  - [ ] Toy
+- [ ] MLIR
+  - [ ] 理论
+  - [ ] Toy
+- [ ] 计算图优化
+- [ ] 算子优化
+- [ ] 量化和稀疏化
 
-config.json
+## 🔗 相关资源
 
-{
-    {
-        pool_size = 1
-        growth_factor =
-    }
-}
+- [学习路径详细文档](./plan/current.md)
+- [AI编译器学习笔记](./AIcompiler/)
+- [编译原理基础](./compiler/)
+- [C++编程基础](./C++/)
