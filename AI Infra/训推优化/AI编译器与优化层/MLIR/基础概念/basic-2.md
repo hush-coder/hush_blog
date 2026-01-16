@@ -385,3 +385,89 @@ def MyOp : ..., DeclareOpInterfaceMethods<MyShapeInterface> {
 
 这样可以让 Op 的 C++ 端功能更强大、接口更统一，极大提升代码复用性和可维护性。
 
+# 前端转换
+
+## 工作流程
+
+### 1. 前提
+
+模型转换本质上就是对模型中每个算子进行转换
+
+所以再模型转化为某个dialect中的ir前要先在相应的.td文件中对每个Op进行定义
+
+### 2. 输入
+
+接着我们通过model_transform接口输入初始模型model_def以及预处理参数(可在相应官网上查到)
+
+### 3. 初始化Converter
+
+根据输入的模型会调用针对该深度学习框架的Converter（一个python接口）来加载，提取模型转换所需的信息用于后续的mlir算子创建，以及初始化mlir模型
+
+### 4. 生成MLIR文本
+
+通过遍历全模型，加上前一步获取的信息，在初始化的MLIR文本中逐一输入算子，生成完整的MLIR模型
+
+### 5. 输出
+
+最后将相应的文件写到MLIR文件中。
+
+## 补充说明
+
+### 初始化Converter
+
+`load_onnx_model`会包含模型输入、输出名称、算子输出形状、算子权重
+
+`init_MLIRImporter`值包含了ModuleOP和MainFunctionOp的文本
+
+### 生成MLIR文本
+
+generate_mlir在遍历原始模型时，会与原模型一一对应的创建Op，然后按顺序插入到MLIR Module中，并且将对应的OP Result保存到operands字典里方便在创建后续OP时作为输入
+
+如果中间算子带有权重，则会保存在weightOp,weightOp也会作为带权重算子的输入之一，所以也会作为操作数加入operands。
+
+## 实例
+
+以一个简单的ONNX卷积网络作为例子
+
+首先在Top层的.td文件定义conv算子
+包含Op的Value(input)、Attr和Value(op result)
+
+# Dialect Conversion
+
+`mlir::applyPartialConversion(operation,target,patterns)`：保留未被标位illegal的operations。
+> 部分转换
+
+`mlir::applyAnalysisConversion(...)`：记录operation转换是否成功确定哪些operations可合法化
+> 部分转换
+**整数值**
+`mlir::applyFullConversion(...)`：转换所有operations
+> 全转换
+
+## Conversion需要三个组件：
+
+***Conversion Target(required)：***
+  
+定义哪些算子和dialect是合法的，有三种状态：合法、动态、非法。
+> 动态指的是只有部分情况下合法
+
+***Rewrite Patterns(required)：***
+
+- 实现非法Op到合法Op的转换
+- 自动生成转换图。
+- **特例**：`class ConversionPattern: public RewritePattern`用于处理包含type转换的算子
+
+***Type Converter(optional)***
+
+**optional条件：** 当存在type转换的时候，需要**Type Converter**来定义。
+
+**作用：**
+
+- 定义type在与pattern交互时怎么转换
+- 确保type的合法性
+
+**组成:**
+
+- Conversion
+- Materialzation(可以生成IR)
+  - Source Materialization: target type -> source type
+  - Target Materialization: source type -> target type
