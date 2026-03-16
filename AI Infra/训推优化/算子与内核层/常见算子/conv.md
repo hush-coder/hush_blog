@@ -22,7 +22,7 @@ Output = Im2Col(Input) × Kernel_reshaped
 
 - ✅ GEMM 是最优化的操作（几十年优化）
 - ✅ 可以利用高度优化的 BLAS 库（如 ARM Compute Library, cuBLAS）
--  ✅ 批量数据重用，缓存友好
+- ✅ 批量数据重用，缓存友好
 
 ## 详细过程
 
@@ -33,7 +33,7 @@ Output = Im2Col(Input) × Kernel_reshaped
 
 ### Step1：展开输入(Im2Col)
 
-```
+```cpp
 // 原始输入: [H=5][W=5][C=3]
 Input[5][5][3] = {
     // 第一行
